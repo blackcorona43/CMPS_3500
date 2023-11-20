@@ -76,6 +76,25 @@ def make_grid(rows, width):
             grid[i].append(node)
     return grid
 
+# defines the grid stat when restarting the game to a desired state
+def make_grid_1(rows, width):
+    grid = []
+    gap = width// rows
+    count = 0
+    for i in range(rows):
+        grid.append([])
+        for j in range(rows):
+            node = Node(j,i, gap)
+            if abs(i-j) % 2 == 0:
+                node.colour=BLACK
+            if (i==3) and (j==3):
+                node.piece = Piece('R')
+            elif(i==4) and (j==4):
+                node.piece=Piece('G')
+            count+=1
+            grid[i].append(node)
+    return grid
+
 
 def draw_grid(win, rows, width):
     gap = width // ROWS
@@ -116,10 +135,10 @@ def count_pieces(grid):
 
 def is_player_out(grid, player):
     count_red, count_green = count_pieces(grid)
-    if player == 'R':
-        return count_red == 0
-    elif player == 'G':
-        return count_green == 0
+    if player == 'R' and count_green == 0:
+        return 'G'
+    elif player == 'G' and count_red == 0:
+        return 'R'
     else:
         return False
 
@@ -203,6 +222,13 @@ def reset_game():
     highlightedPiece = None
     currMove = 'G'
 
+# defines reseting the game to a desired state
+def reset_game_1():
+    global grid, highlightedPiece, currMove
+    grid = make_grid_1(ROWS, WIDTH)
+    highlightedPiece = None
+    currMove = 'G'
+
 def main(WIDTH, ROWS):
     global grid, highlightedPiece, currMove
     grid = make_grid(ROWS, WIDTH)
@@ -210,6 +236,10 @@ def main(WIDTH, ROWS):
     currMove = 'G'
 
     while True:
+        if is_player_out(grid, currMove):
+            print(f"Player {currMove} has won! Game over.")
+            reset_game()
+
         for event in pygame.event.get():
             if event.type== pygame.QUIT:
                 print('EXIT SUCCESSFUL')
@@ -225,6 +255,11 @@ def main(WIDTH, ROWS):
                 if event.key == pygame.K_r:
                     reset_game()
 
+            #press 1 to set the gamestate to game state 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    reset_game_1()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 clickedNode = getNode(grid, ROWS, WIDTH)
                 ClickedPositionColumn, ClickedPositionRow = clickedNode
@@ -234,9 +269,6 @@ def main(WIDTH, ROWS):
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
                         resetColours(grid, highlightedPiece)
                         currMove=move(grid, highlightedPiece, clickedNode)
-                        if is_player_out(grid, currMove):
-                            print(f"Player {currMove} has no more pieces. Game over.")
-                            reset_game()
                 elif highlightedPiece == clickedNode:
                     pass
                 else:
