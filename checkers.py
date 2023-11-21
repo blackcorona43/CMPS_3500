@@ -263,14 +263,22 @@ def main(WIDTH, ROWS):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 clickedNode = getNode(grid, ROWS, WIDTH)
                 ClickedPositionColumn, ClickedPositionRow = clickedNode
+                
                 if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
                     if highlightedPiece:
                         pieceColumn, pieceRow = highlightedPiece
+                        
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
                         resetColours(grid, highlightedPiece)
-                        currMove=move(grid, highlightedPiece, clickedNode)
+                        result = move(grid, highlightedPiece, clickedNode)
+                        #fixes extra turn after capture
+                        currMove = opposite(currMove)
+                        
                 elif highlightedPiece == clickedNode:
-                    pass
+                    #deselect piece
+                    resetColours(grid, highlightedPiece)
+                    highlightedPiece = None
+                    
                 else:
                     if grid[ClickedPositionColumn][ClickedPositionRow].piece:
                         if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
