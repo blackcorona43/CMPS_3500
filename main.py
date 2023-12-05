@@ -9,7 +9,7 @@ import os
 
 pygame.init()
 WIDTH = 1000
-HEIGHT = 900
+HEIGHT = 1000
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Two-Player Pygame Chess!')
 font = pygame.font.Font('freesansbold.ttf', 20)
@@ -19,13 +19,6 @@ timer = pygame.time.Clock()
 fps = 60
 dirname = os.path.dirname(__file__)
 ROWS = 8
-
-# images for the play button and checkers button
-TITLE_SCREEN_BG = pygame.image.load(os.path.join(dirname, 'images/title_screen.jpg'))
-PLAY_BUTTON = pygame.image.load(os.path.join(dirname, 'images/play_button.jpg'))
-PLAY_BUTTON = pygame.transform.scale(PLAY_BUTTON, (150, 50))
-QUIT_BUTTON = pygame.image.load(os.path.join(dirname, 'images/quit_button.png'))
-QUIT_BUTTON = pygame.transform.scale(QUIT_BUTTON, (150, 50))
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 ORANGE = (235, 168, 52)
@@ -41,6 +34,22 @@ HELP_TEXT = [
     "Press R to reset the game.",
     "Press 'H' to close this help screen.",
 ]
+
+
+#Draw Main Menu
+def draw_main_menu():
+        background_image = pygame.image.load('images/title_screen.jpg')
+        background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
+        # Draw the background image
+        screen.blit(background_image, (0, 0))
+        # Draw option boxes
+        screen.blit(big_font.render('CMPS 3500 Project!', True, 'black'), (250, 100))
+        pygame.draw.rect(screen, 'green', [400, 300, 300, 50])
+        pygame.draw.rect(screen, 'blue', [400, 500, 300, 50])
+        pygame.draw.rect(screen, 'red', [400, 400, 300, 50])
+        screen.blit(medium_font.render('Chess', True, 'black'), (450, 310))
+        screen.blit(medium_font.render('Checkers', True, 'black'), (450, 410))
+        screen.blit(medium_font.render('Exit', True, 'black'), (470, 510))
 
     
 # makes a help screen with ESC, R as options
@@ -282,7 +291,6 @@ def checkers_game():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         checkers = False
-                        sys.exit()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r:
@@ -327,7 +335,7 @@ def chess_game():
     chess = True
     WIDTH = 1000
     HEIGHT = 900
-    screen = pygame.display.set_mode([WIDTH, HEIGHT],pygame.FULLSCREEN)
+    screen = pygame.display.set_mode([WIDTH, HEIGHT])
     pygame.display.set_caption('Two-Player Pygame Chess!')
     font = pygame.font.Font('freesansbold.ttf', 20)
     HELP_FONT = pygame.font.Font(None,36)
@@ -861,8 +869,7 @@ def chess_game():
     # main game loop
     black_options = check_options(black_pieces, black_locations, 'black')
     white_options = check_options(white_pieces, white_locations, 'white')
-    run = True
-    while run:
+    while chess:
         timer.tick(fps)
         if counter < 30:
             counter += 1
@@ -886,7 +893,7 @@ def chess_game():
         # event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                chess = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
                 x_coord = event.pos[0] // 100
                 y_coord = event.pos[1] // 100
@@ -1043,7 +1050,6 @@ def chess_game():
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         chess = False
-                        sys.exit()
             # press H for help menu
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_h:
@@ -1061,24 +1067,6 @@ def chess_game():
             draw_game_over()
 
         pygame.display.flip()
-    pygame.quit()
-
-#Draw Main Menu
-def draw_main_menu():
-    screen.fill('dark gray')
-    # Load the background image
-    background_image = pygame.image.load('images/title_screen.jpg')
-    background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
-    # Draw the background image
-    screen.blit(background_image, (0, 0))
-    # Draw option boxes
-    screen.blit(big_font.render('CMPS 3500 Project!', True, 'black'), (250, 100))
-    pygame.draw.rect(screen, 'green', [400, 300, 300, 50])
-    pygame.draw.rect(screen, 'blue', [400, 500, 300, 50])
-    pygame.draw.rect(screen, 'red', [400, 400, 300, 50])
-    screen.blit(medium_font.render('Chess', True, 'black'), (450, 310))
-    screen.blit(medium_font.render('Checkers', True, 'black'), (450, 410))
-    screen.blit(medium_font.render('Exit', True, 'black'), (470, 510))
 
 #Run Main Menu
 main_menu = True
@@ -1088,8 +1076,7 @@ while main_menu:
             pygame.quit()
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            x_coord = event.pos[0]
-            y_coord = event.pos[1]
+            x_coord, y_coord = event.pos
             #play Chess
             if 400 <= x_coord <= 600 and 300 <= y_coord <= 350:
                 chess_game()
@@ -1104,4 +1091,5 @@ while main_menu:
 
     draw_main_menu()
     pygame.display.flip()
+    timer.tick(fps)
 
