@@ -828,6 +828,32 @@ def chess_game():
                     valid_moves = []
                     black_options = check_options(black_pieces, black_locations, 'black')
                     white_options = check_options(white_pieces, white_locations, 'white')
+
+            #Reset whenver any player wants to state 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    game_over = False
+                    winner = ''
+                    white_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
+                                    'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
+                    white_locations = [(0, 0), (2, 2), (4, 1), (5, 0), (7, 2), (4, 2), (5, 2), (7, 0),
+                                    (0, 1), (1, 1), (2, 1), (3, 2), (4, 3), (5, 1), (6, 1), (7, 1)]
+                    white_moved = [False, False, False, False, False, False, False, False,
+                                False, False, False, False, False, False, False, False]
+                    black_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
+                                    'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
+                    black_locations = [(0, 7), (0, 4), (1, 5), (6, 7), (3, 7), (2, 7), (5, 5), (5, 7),
+                                    (0, 6), (1, 6), (2, 6), (3, 6), (4, 4), (5, 6), (6, 6), (7, 6)]
+                    black_moved = [False, False, False, False, False, False, False, False,
+                                False, False, False, False, False, False, False, False]
+                    captured_pieces_white = []
+                    captured_pieces_black = []
+                    turn_step = 0
+                    selection = 100
+                    valid_moves = []
+                    black_options = check_options(black_pieces, black_locations, 'black')
+                    white_options = check_options(white_pieces, white_locations, 'white')
+
             # ESC key to quit game
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -908,10 +934,36 @@ def checkers_game():
                 node = Node(j,i, gap)
                 if abs(i-j) % 2 == 0:
                     node.colour=BLACK
-                if (i==3) and (j==3):
-                    node.piece = Piece('R')
-                elif(i==4) and (j==4):
-                    node.piece=Piece('G')
+                if  i==0:
+                    if j == 0 or j == 4:
+                        node.piece = Piece('R')
+                if  i==1:
+                    if j == 3 or j == 5 or j == 7:
+                        node.piece = Piece('R')
+                if  i==2:
+                    if j == 0 or j == 6:
+                        node.piece = Piece('R')
+                if  i==3:
+                    if j == 1:
+                        node.piece = Piece('R')   
+                if  i==7:
+                    if j == 3:
+                        node.piece = Piece('R')
+                        node.piece.type = 'KING'
+                        node.piece.image=REDKING
+
+     
+                if  i==3:
+                    if j == 3:
+                        node.piece = Piece('G')  
+                if  i==5:
+                    if j == 1 or j == 3 or j == 7:
+                        node.piece = Piece('G')  
+                if  i==6:
+                    if j == 0 or j == 2 or j == 6:
+                        node.piece = Piece('G')
+
+
                 count+=1
                 grid[i].append(node)
         return grid
