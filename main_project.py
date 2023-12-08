@@ -1,10 +1,19 @@
+# course: CMPS3500
+# CLASS Project
+# PYTHON IMPLEMENTATION: BASIC DATA ANALYSIS
+# date: 12/08/23
+# Group number: 6
+# Student 1: Galo De Paula Jimenez
+# Student 2: Ruben Corona
+# Student 3: Estevan Arroyo
+# description: Implementation Basic Data Analysis Routines
+
 # two player chess in python with Pygame!
 # pawn double space checking
 # castling
 # en passant
 # pawn promotion
 
-import pygame
 import pygame
 import random
 import sys
@@ -983,229 +992,306 @@ This function sets up the game board, handles player moves,
 checks for victory conditions, and manages the overall flow of the game.
 """
 def checkers_game():
+    # Set up the pygame display with a square window
     pygame.display.set_mode((WIDTH,WIDTH))
-    priorMoves=[]
+    priorMoves=[] # Initialize an empty list to store prior moves
+
+    # Define  class "Node" to represent each square on the game board
     class Node:
         def __init__(self, row, col, width):
             self.row = row
             self.col = col
+            # Calculate the pixel coordinates of the Node based on its position and width
             self.x = int(row * width)
             self.y = int(col * width)
-            self.colour = WHITE
+            self.colour = WHITE # Set the initial color of the Node to WHITE
             self.piece = None
 
+         # draws the Node on the game window
         def draw(self, WIN):
-            pygame.draw.rect(WIN, self.colour, (self.x, self.y, WIDTH / ROWS, WIDTH / ROWS))
+            pygame.draw.rect(WIN, self.colour, (self.x, self.y, WIDTH / ROWS, WIDTH / ROWS)) # Draw a rectangle
+             # If Node has piece, draw the piece's image on the game window at the Node
             if self.piece:
                 WIN.blit(self.piece.image, (self.x, self.y))
 
-
+    # this func updates the display with the current state of the game board
     def update_display(win, grid, rows, width):
+        # Iterate through each row in the grid
         for row in grid:
             for spot in row:
-                spot.draw(win)
+                spot.draw(win)# Draw current spot
+        # Draw the grid lines on the game window
         draw_grid(win, rows, width)
+        # Update the display
         pygame.display.update()
 
-
+    # this func creates the game board grid
     def make_grid(rows, width):
         grid = []
+        # Calculate the gap between each spot (Node) based on the number of rows
         gap = width// rows
         count = 0
+        # Iterate through each row
         for i in range(rows):
             grid.append([])
+             # Iterate through each column
             for j in range(rows):
+                # Create a Node at the current position with appropriate gap
                 node = Node(j,i, gap)
+                # Set the color of the Node based on its position
                 if abs(i-j) % 2 == 0:
                     node.colour=BLACK
+
+                 # Place red pieces on the bottom rows
                 if (abs(i+j)%2==0) and (i<3):
                     node.piece = Piece('R')
+                # Place green pieces on the top rows
                 elif(abs(i+j)%2==0) and i>4:
                     node.piece=Piece('G')
                 count+=1
+                # Append the current Node to the grid
                 grid[i].append(node)
         return grid
 
-    # defines the grid stat when restarting the game to a desired state
+    # creates a custom game board grid with specific piece placements
     def make_grid_1(rows, width):
-        grid = []
-        gap = width// rows
+        grid = []         # Initialize empty grid list
+        # Calculate the gap between each spot (Node) based on the number of rows
+        gap = width // rows
         count = 0
+
+        # Iterate through each row 
         for i in range(rows):
-            grid.append([])
+            grid.append([])     # Append empty list for the current row
+            
+            # Iterate through each column in the current row
             for j in range(rows):
-                node = Node(j,i, gap)
-                if abs(i-j) % 2 == 0:
-                    node.colour=BLACK
-                if  i==0:
+                # Create Node at the current position with gap
+                node = Node(j, i, gap)
+
+                # Set color of the Node based on its position
+                if abs(i - j) % 2 == 0:
+                    node.colour = BLACK
+
+                # Set the initial state of the grid with specific piece placements
+                if i == 0:
                     if j == 0 or j == 4:
                         node.piece = Piece('R')
-                if  i==1:
+                elif i == 1:
                     if j == 3 or j == 5 or j == 7:
                         node.piece = Piece('R')
-                if  i==2:
+                elif i == 2:
                     if j == 0 or j == 6:
                         node.piece = Piece('R')
-                if  i==3:
+                elif i == 3:
                     if j == 1:
-                        node.piece = Piece('R')   
-                if  i==7:
+                        node.piece = Piece('R')
+                elif i == 7:
                     if j == 3:
                         node.piece = Piece('R')
                         node.piece.type = 'KING'
-                        node.piece.image=REDKING
+                        node.piece.image = REDKING
 
-     
-                if  i==3:
+                # Set the initial state of the grid with specific piece placements
+                if i == 3:
                     if j == 3:
-                        node.piece = Piece('G')  
-                if  i==5:
+                        node.piece = Piece('G')
+                elif i == 5:
                     if j == 1 or j == 3 or j == 7:
-                        node.piece = Piece('G')  
-                if  i==6:
+                        node.piece = Piece('G')
+                elif i == 6:
                     if j == 0 or j == 2 or j == 6:
                         node.piece = Piece('G')
 
-
-                count+=1
+                count += 1
+                # Append the current Node to the grid
                 grid[i].append(node)
+
+        # Return the completed grid
         return grid
 
-
+    # DRAW grid lines on the game window
     def draw_grid(win, rows, width):
-        gap = width // ROWS
+        gap = width // ROWS     # Calculate the gap between each spot 
+
+        # Iterate through each row in the grid
         for i in range(rows):
+            # Draw a horizontal line - current row
             pygame.draw.line(win, BLACK, (0, i * gap), (width, i * gap))
+            # Iterate through each column in the current row
             for j in range(rows):
+                # Draw a vertical line - current column
                 pygame.draw.line(win, BLACK, (j * gap, 0), (j * gap, width))
 
-
+    # this class represents game pieces
     class Piece:
         def __init__(self, team):
-            self.team=team
-            self.image= RED if self.team=='R' else GREEN
-            self.type=None
+            self.team = team    # Initialize the piece with its team (R or G)
+            self.image = RED if self.team == 'R' else GREEN     # Set color (RED or GREEN)
+            self.type = None
 
+        # draws the piece on the game window at specified position
         def draw(self, x, y):
-            WIN.blit(self.image, (x,y))
+            WIN.blit(self.image, (x, y))
 
 
+    # Function to get the grid position (row, column) of the mouse cursor
     def getNode(grid, rows, width):
-        gap = width//rows
-        RowX,RowY = pygame.mouse.get_pos()
-        Row = RowX//gap
-        Col = RowY//gap
-        return (Col,Row)
+        gap = width // rows                     # Calculate the gap between each spot
+        RowX, RowY = pygame.mouse.get_pos()     # Get current mouse position
+        
+        # Calculate row and column based on the mouse position and gap
+        Row = RowX // gap
+        Col = RowY // gap
+        return (Col, Row)
 
+    # Counts the number of R and G pieces left
     def count_pieces(grid):
         count_red = 0
         count_green = 0
-        for row in grid:
-            for spot in row:
+        for row in grid:        
+            for spot in row:    
+                # Check if the spot has a piece and increment
                 if spot.piece:
                     if spot.piece.team == 'R':
                         count_red += 1
                     elif spot.piece.team == 'G':
                         count_green += 1
+
+        # Return the counts as a tuple (count_red, count_green)
         return count_red, count_green
 
+    #check if a player is out of pieces (lost)
     def is_player_out(grid, player):
+        # Get the counts of red and green pieces on the game board
         count_red, count_green = count_pieces(grid)
+        # Check if the specified player is out of pieces and return the opponent's team if true
         if player == 'R' and count_green == 0:
             return 'G'
         elif player == 'G' and count_red == 0:
             return 'R'
         else:
+            # Return False if player still has pieces
             return False
 
-
+    # Function to reset colors of nodes in potential move positions and the current node
     def resetColours(grid, node):
-        positions = generatePotentialMoves(node, grid)
-        positions.append(node)
+        positions = generatePotentialMoves(node, grid)      # Generate potential move positions for the given node
+        positions.append(node)                              # Include the current node in the list of positions
 
+        # Iterate through the colored nodes in the potential move positions
         for colouredNodes in positions:
-            nodeX, nodeY = colouredNodes
+            nodeX, nodeY = colouredNodes # Extract column and row indices of the colored node
+            # Set color of node based on position and checkered pattern
             grid[nodeX][nodeY].colour = BLACK if abs(nodeX - nodeY) % 2 == 0 else WHITE
 
+    # highlights potential move positions on the game board
     def HighlightpotentialMoves(piecePosition, grid):
+        # Generate potential move positions for the given piece 
         positions = generatePotentialMoves(piecePosition, grid)
+        # Iterate through potential move positions and set color to blue
         for position in positions:
-            Column,Row = position
-            grid[Column][Row].colour=BLUE
+            Column, Row = position
+            grid[Column][Row].colour = BLUE
 
+    # get opposite team of the given team
     def opposite(team):
-        return "R" if team=="G" else "G"
+        return "R" if team == "G" else "G"
 
+    # generate potential move positions for given node position on game board
     def generatePotentialMoves(nodePosition, grid):
-        checker = lambda x,y: x+y>=0 and x+y<8
-        positions= []
-        column, row = nodePosition
+        # Lambda checks if the resulting position is within the bounds of the game
+        checker = lambda x, y: x + y >= 0 and x + y < 8
+        positions = []                  # store potential move positions
+        column, row = nodePosition      # Extract column and row node position
+
+        # Check if the current node has piece
         if grid[column][row].piece:
+            # Define vectors for potential moves based on the team of the piece
             vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
-            if grid[column][row].piece.type=='KING':
-                vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
+            # If piece is a king, allow additional vectors for backward moves
+            if grid[column][row].piece.type == 'KING':
+                vectors = [[1, -1], [1, 1], [-1, -1], [-1, 1]]
+
+            # Iterate through the defined vectors
             for vector in vectors:
                 columnVector, rowVector = vector
-                if checker(columnVector,column) and checker(rowVector,row):
-                    #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
-                    if not grid[(column+columnVector)][(row+rowVector)].piece:
+                # Check resulting position within bounds
+                if checker(columnVector, column) and checker(rowVector, row):
+                    # Check if next node is empty
+                    if not grid[(column + columnVector)][(row + rowVector)].piece:
                         positions.append((column + columnVector, row + rowVector))
-                    elif grid[column+columnVector][row+rowVector].piece and\
-                            grid[column+columnVector][row+rowVector].piece.team==opposite(grid[column][row].piece.team):
-
-                        if checker((2* columnVector), column) and checker((2* rowVector), row) \
-                                and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
-                            positions.append((2* columnVector+ column,2* rowVector+ row ))
+                    # Check if next node has an opponent's piece
+                    elif grid[column + columnVector][row + rowVector].piece and \
+                            grid[column + columnVector][row + rowVector].piece.team == opposite(grid[column][row].piece.team):
+                        # Check if the node after the opponent's piece is empty
+                        if checker((2 * columnVector), column) and checker((2 * rowVector), row) \
+                                and not grid[(2 * columnVector) + column][(2 * rowVector) + row].piece:
+                            positions.append((2 * columnVector + column, 2 * rowVector + row))
 
         return positions
+
 
 
     """
     Error with locating possible moves row col error
     """
+    # highlights a clicked node, resets old highlights, and displays potential move positions
     def highlight(ClickedNode, Grid, OldHighlight):
-        Column,Row = ClickedNode
-        Grid[Column][Row].colour=ORANGE
+        Column, Row = ClickedNode
+        # Highlight the clicked node in orange
+        Grid[Column][Row].colour = ORANGE
+        # Reset colors of old highlighted nodes
         if OldHighlight:
             resetColours(Grid, OldHighlight)
         HighlightpotentialMoves(ClickedNode, Grid)
-        return (Column,Row)
+        return (Column, Row)
 
+    # moves piece on the game board
     def move(grid, piecePosition, newPosition):
-        resetColours(grid, piecePosition)
+        resetColours(grid, piecePosition)       # Reset colors nodes of piece that will move
+        # Extract column and row indices of the new and old positions
         newColumn, newRow = newPosition
         oldColumn, oldRow = piecePosition
 
+        # Move the piece to the new position
         piece = grid[oldColumn][oldRow].piece
-        grid[newColumn][newRow].piece=piece
+        grid[newColumn][newRow].piece = piece
         grid[oldColumn][oldRow].piece = None
 
-        if newColumn==7 and grid[newColumn][newRow].piece.team=='R':
-            grid[newColumn][newRow].piece.type='KING'
-            grid[newColumn][newRow].piece.image=REDKING
-        if newColumn==0 and grid[newColumn][newRow].piece.team=='G':
-            grid[newColumn][newRow].piece.type='KING'
-            grid[newColumn][newRow].piece.image=GREENKING
-        if abs(newColumn-oldColumn)==2 or abs(newRow-oldRow)==2:
-            grid[int((newColumn+oldColumn)/2)][int((newRow+oldRow)/2)].piece = None
+        # Check for promotion to king and update piece type and image accordingly
+        if newColumn == 7 and grid[newColumn][newRow].piece.team == 'R':
+            grid[newColumn][newRow].piece.type = 'KING'
+            grid[newColumn][newRow].piece.image = REDKING
+        if newColumn == 0 and grid[newColumn][newRow].piece.team == 'G':
+            grid[newColumn][newRow].piece.type = 'KING'
+            grid[newColumn][newRow].piece.image = GREENKING
+
+        # Check for capturing an opponent's piece during a move
+        if abs(newColumn - oldColumn) == 2 or abs(newRow - oldRow) == 2:
+            grid[int((newColumn + oldColumn) / 2)][int((newRow + oldRow) / 2)].piece = None
             return grid[newColumn][newRow].piece.team
+
+        # If no capturing occurred, return the opposite team's color
         return opposite(grid[newColumn][newRow].piece.team)
 
-    # function to reset the game
+    # Function to reset the game state to the initial state
     def reset_game():
         global grid, highlightedPiece, currMove
         grid = make_grid(ROWS, WIDTH)
         highlightedPiece = None
         currMove = 'G'
 
-    # defines reseting the game to a desired state
+    # Function to reset the game state to a custom initial state
     def reset_game_1():
         global grid, highlightedPiece, currMove
         grid = make_grid_1(ROWS, WIDTH)
         highlightedPiece = None
         currMove = 'G'
 
+    # Main function for initializing game state variables
     def main(WIDTH, ROWS):
+        #initialize variables
         global grid, highlightedPiece, currMove, help_menu_displayed, double_jump
         grid = make_grid(ROWS, WIDTH)
         highlightedPiece = None
@@ -1214,7 +1300,8 @@ def checkers_game():
         double_jump = False
 
         while True:
-            if is_player_out(grid, currMove):
+            # Check if the current player has won
+            if is_player_out(grid, currMove):      
                 print(f"Player {currMove} has won! Game over.")
                 reset_game()
             # click on the quit button to exit fully
@@ -1242,6 +1329,7 @@ def checkers_game():
                     clickedNode = getNode(grid, ROWS, WIDTH)
                     ClickedPositionColumn, ClickedPositionRow = clickedNode
                     
+                     # Move the highlighted piece to the clicked position if valid
                     if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
                         if highlightedPiece:
                             pieceColumn, pieceRow = highlightedPiece
@@ -1250,14 +1338,15 @@ def checkers_game():
                             double_jump = move(grid, highlightedPiece, clickedNode)
                             currMove = double_jump
                             # currMove = move(grid, highlightedPiece, clickedNode)
-                    elif highlightedPiece == clickedNode:
+                    elif highlightedPiece == clickedNode:   # Unhighlight the piece if it's clicked again
                        pass                
                     else:
+                         # Highlight the clicked piece for potential moves
                         if grid[ClickedPositionColumn][ClickedPositionRow].piece:
                             if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
                                 highlightedPiece = highlight(clickedNode, grid, highlightedPiece)                     
             
-            
+            # Update and display the game window
             update_display(WIN, grid,ROWS,WIDTH)
     main(WIDTH, ROWS)
 
