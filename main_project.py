@@ -14,7 +14,7 @@ import os
 # current directory
 dirname = os.path.dirname(__file__)
 
-WIDTH = 1000
+WIDTH = 800
 ROWS = 8
 
 RED= pygame.image.load(os.path.join(dirname, 'images/red.png'))
@@ -24,6 +24,7 @@ REDKING = pygame.image.load(os.path.join(dirname, 'images/redking.png'))
 GREENKING = pygame.image.load(os.path.join(dirname, 'images/greenking.png'))
 
 # images for the play button and checkers button
+CHESS_BOARD = pygame.image.load(os.path.join(dirname, 'images/chessboard.jpg'))
 TITLE_SCREEN_BG = pygame.image.load(os.path.join(dirname, 'images/title_screen.jpg'))
 # this button is for checkers
 CHECKERS_BUTTON = pygame.image.load(os.path.join(dirname, 'images/play_button.jpg'))
@@ -43,7 +44,7 @@ ORANGE = (235, 168, 52)
 BLUE = (76, 252, 241)
 
 pygame.init()
-WIN = pygame.display.set_mode((WIDTH,WIDTH),pygame.FULLSCREEN)
+WIN = pygame.display.set_mode((WIDTH,WIDTH))
 pygame.display.set_caption('Checkers')
 help_menu_displayed = False
 
@@ -116,7 +117,7 @@ def chess_game():
     global help_menu_displayed
     WIDTH = 1000
     HEIGHT = 900
-    screen = pygame.display.set_mode([WIDTH, HEIGHT],pygame.FULLSCREEN)
+    screen = pygame.display.set_mode([WIDTH, HEIGHT])
     pygame.display.set_caption('Two-Player Pygame Chess!')
     font = pygame.font.Font('freesansbold.ttf', 20)
     HELP_FONT = pygame.font.Font(None,36)
@@ -881,6 +882,7 @@ def chess_game():
 
 # Start of checkers game
 def checkers_game():
+    pygame.display.set_mode((WIDTH,WIDTH))
     priorMoves=[]
     class Node:
         def __init__(self, row, col, width):
